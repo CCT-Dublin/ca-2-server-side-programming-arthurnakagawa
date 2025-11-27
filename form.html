@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+</head>
+<body>
+    <form id="form" method="post" action="/submit">
+        <label for="first_name">First name:</label><br>
+        <input type="text" id="first_name" name="first_name" pattern="^[A-Za-z]{1,20}$" maxlength="20" required><!-- pattern defined for first name, last name and also for eircode to make the user follow the rules -->
+    <br>
+        <label for="last_name">Last name:</label><br>
+        <input type="text" id="last_name" name="last_name" pattern="^[A-Za-z]{1,20}$" maxlength="20" required>
+    <br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required> <!-- The type "email" makes the user write a correct email format -->
+    <br>
+        <label for="phone_number">Phone number:</label><br>
+        <input type="tel" id="phone_number" name="phone_number" placeholder="012 345 6789" pattern="^[0-9]{10}$" maxlength="10" required> <!-- The type "tel" and the "pattern" make the user type a correct phone number format -->
+    <br>
+        <label for="eircode">Eircode:</label><br>
+        <input type="text" id="eircode" name="eircode" pattern="^[A-Za-z0-9]{6}" placeholder="A1BC23" required>
+    <br>
+    <br>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
