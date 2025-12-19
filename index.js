@@ -7,6 +7,8 @@ const app = express();
 //The TCP port number where my app will listen for HTTP request
 const port = 8080;
 
+const fs = require('fs');
+
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));//Let the server understand form data submitted from traditional HTML forms
@@ -20,29 +22,31 @@ app.get('/', (req, res) => {
 //handle form submission
 //app.post('/submit') defines another route, this time for post requests - this is triggered when the form is submitted by my client.js fetch() call 
 app.post('/submit', (req, res) => {
-    const { first_name, last_name, email, phone_number, eircode } = req.body;//req.body is the object containing the data the user sent
+    const { first_name, last_name, email, phone_number, eircode, age } = req.body;//req.body is the object containing the data the user sent
     //regular expressions (regex)
     const namePattern = /^[A-Za-z0-9]{1,20}$/;//letter or numbers, between 1-20 characters
     const phonePattern = /^[0-9]{10}$/;//exactly 10 digits
     const eircodePattern = /^[0-9][A-Za-z0-9]{5}$/;//6 alphanumeric characters
+    const agePattern = /^[0-9]{2}$/;
     //validation block ensures every field exists and matches its pattern
     //.test() checks if the string follows the regex rules
     //if any test fails, the server returns HTTP status 400("Bad request") or a JSON object {error: 'Invalid input data'}
     if (
-        !first_name || !last_name || !email || !phone_number || !eircode || 
+        !first_name || !last_name || !email || !phone_number || !eircode || !age ||
         !namePattern.test(first_name) ||
         !namePattern.test(last_name) ||
         !phonePattern.test(phone_number) ||
-        !eircodePattern.test(eircode)
+        !eircodePattern.test(eircode) ||
+        !agePattern.test(age)
     ) {
         //the return statement stops further execution, protecting the database from bad data
         return res.status(400).json({ error: 'Invalid input data' }); 
     }
     //SQL insert query
     //use the paramater placeholders (?) to prevent SQL injection
-    const sql = `INSERT INTO mysql_table (first_name, last_name, email, phone_number, eircode) VALUES (?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO mysql_table (first_name, last_name, email, phone_number, eircode, age) VALUES (?, ?, ?, ?, ?)`;
     //execute the query
-    db.query(sql, [first_name, last_name, email, phone_number, eircode], (err, result) => {
+    db.query(sql, [first_name, last_name, email, phone_number, eircode, age], (err, result) => {
         //handle database errors
         if (err) {
             //handle if the error is a duplicate email
@@ -62,6 +66,10 @@ app.post('/submit', (req, res) => {
     });
 
 });
+
+const readableStream = fs.createReadStream('person_info.csv', 'csv-parser');
+
+
 //app.listen() starts the web server
 //when its running, the callback prints a confirmation message so you know which address to open in the browser
 app.listen(port, () => {
