@@ -9,6 +9,10 @@ const port = 8080;
 
 const fs = require('fs');
 
+const path = require('path');
+
+const csvParser = require('csv-parser');
+
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));//Let the server understand form data submitted from traditional HTML forms
@@ -67,8 +71,25 @@ app.post('/submit', (req, res) => {
 
 });
 
-const readableStream = fs.createReadStream('person_info.csv', 'csv-parser');
+app.get('/import-csv', (req, res) => {
+    const csvPath = path.join(__dirname, 'person_info.csv');
 
+    const readableStream = fs.createReadStream(csvPath);
+
+    const stream = readableStream.pipe(csvParser());
+
+    stream.on('data', (row) => {
+        console.log(row)
+    });
+
+    stream.on('end', () => {
+        res.json({ ok: true })
+    });
+
+    stream.on('error', (err) => {
+        res.status(500).json({ error: 'Error reading file'})
+    });
+});
 
 //app.listen() starts the web server
 //when its running, the callback prints a confirmation message so you know which address to open in the browser
