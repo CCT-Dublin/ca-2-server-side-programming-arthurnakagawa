@@ -31,7 +31,7 @@ app.post('/submit', (req, res) => {
     const namePattern = /^[A-Za-z0-9]{1,20}$/;//letter or numbers, between 1-20 characters
     const phonePattern = /^[0-9]{10}$/;//exactly 10 digits
     const eircodePattern = /^[0-9][A-Za-z0-9]{5}$/;//6 alphanumeric characters
-    const agePattern = /^[0-9]{2}$/;
+    const agePattern = /^[0-9]{3}$/;
     //validation block ensures every field exists and matches its pattern
     //.test() checks if the string follows the regex rules
     //if any test fails, the server returns HTTP status 400("Bad request") or a JSON object {error: 'Invalid input data'}
@@ -78,16 +78,28 @@ app.get('/import-csv', (req, res) => {
 
     const stream = readableStream.pipe(csvParser());
 
+    let rowNumber = 1;
+
+    let inserted = 0, rejected = 0;
+
     stream.on('data', (row) => {
+        rowNumber++
+        const first =(row.first_name )
+        
+        row.age;
         console.log(row)
     });
 
     stream.on('end', () => {
-        res.json({ ok: true })
+        sql = `INSERT INTO mysql_table (first_name, last_name, email, age) VALUES (?, ?, ?, ?, ?)`;
+        inserted++
+        res.json({ "inserted": X, "rejected": Y })
     });
 
     stream.on('error', (err) => {
-        res.status(500).json({ error: 'Error reading file'})
+        console.error("CSV read error: ", err.message)
+        rejected++
+        return res.status(500).json({ error: 'Error reading file'})
     });
 });
 
